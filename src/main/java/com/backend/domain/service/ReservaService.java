@@ -1,6 +1,7 @@
 package com.backend.domain.service;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -24,9 +25,9 @@ public class ReservaService {
 	}
 
 	@Transactional
-	public Reserva save(Quadra quadra, Reserva reserva, Client cliente) {
+	public Reserva save(Quadra quadra, Reserva reserva, Client cliente, LocalDate dataDesejada) {
 
-		if (reservaRepository.isHorarioDisponivel(quadra, reserva.getHorarioInicio(), reserva.getHorarioFim())) {
+		if (reservaRepository.isHorarioDisponivel(quadra, dataDesejada, reserva.getHorarioInicio(), reserva.getHorarioFim())) {
 			throw new ReservaExisteException(String.format("Horario ja cadastrado para a quadra %s", quadra.getNome()));
 		}
 
@@ -39,6 +40,7 @@ public class ReservaService {
 		}
 
 		reserva.setQuadra(quadra);
+		reserva.setCliente(cliente);
 		reserva.calcularPreco();
 
 		return reservaRepository.save(reserva);

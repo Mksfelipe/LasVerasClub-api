@@ -3,7 +3,8 @@ package com.backend.domain.model;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
+import java.time.OffsetTime;
 
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -12,9 +13,13 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
+
+import org.hibernate.annotations.Where;
 
 import com.backend.domain.model.converter.BooleanConverter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -24,7 +29,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@Where(clause = "ativo = 'Y'")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Reserva {
 
 	@Id
@@ -34,11 +41,15 @@ public class Reserva {
 
 	@Getter
 	@Setter
-	private OffsetDateTime horarioInicio;
+	private LocalDate data;
 	
 	@Getter
 	@Setter
-	private OffsetDateTime horarioFim;
+	private OffsetTime horarioInicio;
+	
+	@Getter
+	@Setter
+	private OffsetTime horarioFim;
 
 	@JsonIgnore
 	@Getter
@@ -61,14 +72,14 @@ public class Reserva {
 	@Getter
 	@Setter
 	private int numberParticipants = 1;
+	
+	@Convert(converter = BooleanConverter.class)
+	private Boolean ativo = true;
 
 	@Getter
 	@Setter
 	@Enumerated(EnumType.ORDINAL)
 	private TypeSport typeSport;
-	
-	@Convert(converter = BooleanConverter.class)
-	private Boolean fixed = false;
 	
 	@Getter
 	@Setter

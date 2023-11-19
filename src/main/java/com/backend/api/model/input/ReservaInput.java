@@ -1,6 +1,6 @@
 package com.backend.api.model.input;
 
-import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 
 import com.backend.domain.model.TypeSport;
 
@@ -11,9 +11,9 @@ import lombok.Setter;
 @Setter
 public class ReservaInput {
 
-	private OffsetDateTime horarioInicio;
-    private OffsetDateTime horarioFim;
-    private Byte numberParticipants;
+	private OffsetTime horarioInicio;
+    private OffsetTime horarioFim;
+    private Byte numberParticipants = 1;
     private TypeSport typeSport;
 	
 }
