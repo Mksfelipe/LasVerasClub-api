@@ -26,6 +26,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
 	
 	@Query("SELECT r FROM Reserva r WHERE r.quadra.id = :quadraId")
-    List<Reserva> findAllByQuadraId(@Param("quadraId") Long quadraId);
+	List<Reserva> findAllByQuadraId(@Param("quadraId") Long quadraId);
 
 }

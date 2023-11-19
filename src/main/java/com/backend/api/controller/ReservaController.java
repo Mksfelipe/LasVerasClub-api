@@ -3,7 +3,6 @@ package com.backend.api.controller;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +15,6 @@ import com.backend.api.model.input.ReservaInput;
 import com.backend.domain.model.Client;
 import com.backend.domain.model.Quadra;
 import com.backend.domain.model.Reserva;
-import com.backend.domain.repository.ReservaFixaRepository;
 import com.backend.domain.service.ClientService;
 import com.backend.domain.service.QuadraService;
 import com.backend.domain.service.ReservaService;

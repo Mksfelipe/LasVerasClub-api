@@ -27,8 +27,10 @@ public class ReservaService {
 	@Transactional
 	public Reserva save(Quadra quadra, Reserva reserva, Client cliente, LocalDate dataDesejada) {
 
-		if (reservaRepository.isHorarioDisponivel(quadra, dataDesejada, reserva.getHorarioInicio(), reserva.getHorarioFim())) {
-			throw new ReservaExisteException(String.format("Horario ja cadastrado para a quadra %s", quadra.getNome()));
+		if (reservaRepository.isHorarioDisponivel(quadra, dataDesejada, reserva.getHorarioInicio(),
+				reserva.getHorarioFim())) {
+			throw new ReservaExisteException(String.format("Horario ja cadastrado para a quadra %s, Horario: %s",
+					quadra.getNome(), dataDesejada.toString()));
 		}
 
 		if (Duration.between(reserva.getHorarioInicio(), reserva.getHorarioFim()).toMinutes() < 30) {

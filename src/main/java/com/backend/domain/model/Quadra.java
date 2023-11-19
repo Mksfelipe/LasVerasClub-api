@@ -24,7 +24,7 @@ import lombok.EqualsAndHashCode;
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
-@Where(clause = "ativo = 'Y")
+@Where(clause = "ativo = 'Y'")
 public class Quadra {
 
 	@Id
