@@ -35,11 +35,17 @@ public class ClientService {
 	public Client save(Client client) {
 
 		Optional<Client> clientOptional = clientRepository.findByCpf(client.getCpf());
-
+		Optional<Client> clientOptionalEmail = clientRepository.findByEmail(client.getEmail());
+		
 		if (clientOptional.isPresent()) {
 			throw new NegocioException("Cpf já cadastrado");
 		}
+		
+		if (clientOptionalEmail.isPresent()) {
+			throw new NegocioException("Email já cadastrado");
+		}
 
+		
 		Optional<Role> role = roleRepository.findById(2L);
 
 		// ADD ROLE PADRAO PARA NOVOS USUARIOS

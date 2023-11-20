@@ -47,6 +47,7 @@ public class ReservaService {
 
 		return reservaRepository.save(reserva);
 	}
+	
 
 	public List<Reserva> findAllByQuadraId(Long quadraId) {
 		return reservaRepository.findAllByQuadraId(quadraId);

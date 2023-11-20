@@ -7,6 +7,7 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,37 +22,36 @@ import com.backend.domain.repository.filter.ReservaFixaFilter;
 
 @Service
 public class ReservaFixaService {
-	
-	 Logger logger = LoggerFactory.getLogger(ReservaFixaService.class);
 
+	Logger logger = LoggerFactory.getLogger(ReservaFixaService.class);
+
+	@Autowired
+	private ModelMapper modelMapper;
+	
 	@Autowired
 	private ReservaFixaRepository repositorioReservasFixas;
 
 	@Autowired
 	private ReservaService reservaService;
-
+	
 	public ReservaFixa save(ReservaFixa reservaFixa) {
 
-		ReservaFixaFilter filter = new ReservaFixaFilter();
-
-		filter.setHorarioInicio(reservaFixa.getHorarioInicio());
-		filter.setHorarioFim(reservaFixa.getHorarioFim());
-		filter.setQuadraId(reservaFixa.getQuadra().getId());
-		filter.setDiasSemana(reservaFixa.getDiasSemanaAsList());
-
+		ReservaFixaFilter filter = modelMapper.map(reservaFixa, ReservaFixaFilter.class);
+		
 		if (repositorioReservasFixas.existsReservaFixaNoMesmoDiaEHorarioEQuadra(filter)) {
 			throw new ReservaExisteException(
 					String.format("Já Existe uma Reserva fixa cadastrada nesse Horario na quadra: %s, Nos dias: %s",
 							reservaFixa.getQuadra().getNome(), obterNomesDias(filter.getDiasSemana())));
 		}
 
-		
 		reservaFixa.calcularPreco();
-		reservaFixa.setData(LocalDate.now());
+
+		gerarReservasParaClientesComReservaFixa(reservaFixa);
+		
 		return repositorioReservasFixas.save(reservaFixa);
 	}
 
-	@Scheduled(cron = "*/20 * * * * *")
+	@Scheduled(cron = "0 0 0 1 * *")
 	public void gerarReservasParaClientesComReservaFixa() {
 		// Busca todas as reservas fixas cadastradas
 		List<ReservaFixa> reservasFixas = repositorioReservasFixas.findAll();
@@ -65,10 +65,28 @@ public class ReservaFixaService {
 					.isBefore(ultimoDiaDoMes.plusDays(1)); dataReserva = dataReserva.plusDays(1)) {
 				if (isDiaSelecionado(reservaFixa, dataReserva.getDayOfWeek())) {
 					try {
-		                criarReservaParaDia(reservaFixa, dataReserva);
-		            } catch (ReservaExisteException ex) {
-		                logger.warn("Reserva já gerada para {}", reservaFixa.getData());
-		            }
+						criarReservaParaDia(reservaFixa, dataReserva);
+					} catch (ReservaExisteException ex) {
+						logger.warn("Reserva já gerada para {}", reservaFixa.getData());
+					}
+				}
+			}
+		}
+	}
+
+	public void gerarReservasParaClientesComReservaFixa(ReservaFixa reservaFixa) {
+
+		// Obtém o último dia do mês atual
+		LocalDate ultimoDiaDoMes = YearMonth.now().atEndOfMonth();
+
+		// Para cada reserva fixa, cria uma reserva correspondente para cada dia do mês
+		for (LocalDate dataReserva = LocalDate.now(); dataReserva
+				.isBefore(ultimoDiaDoMes.plusDays(1)); dataReserva = dataReserva.plusDays(1)) {
+			if (isDiaSelecionado(reservaFixa, dataReserva.getDayOfWeek())) {
+				try {
+					criarReservaParaDia(reservaFixa, dataReserva);
+				} catch (ReservaExisteException ex) {
+					logger.warn("Reserva já gerada para {}", reservaFixa.getData());
 				}
 			}
 		}
@@ -96,28 +114,30 @@ public class ReservaFixaService {
 	}
 
 	private void criarReservaParaDia(ReservaFixa reservaFixa, LocalDate dataReserva) {
-		Reserva reserva = new Reserva();
-		reserva.setCliente(reservaFixa.getCliente());
-		reserva.setHorarioInicio(reservaFixa.getHorarioInicio());
-		reserva.setHorarioFim(reservaFixa.getHorarioFim());
+		Reserva reserva = modelMapper.map(reservaFixa, Reserva.class);
 		reserva.setData(dataReserva);
-		reserva.setNumberParticipants(reservaFixa.getNumberParticipants());
-		reserva.setTypeSport(reservaFixa.getTypeSport());
-		
+
 		reservaService.save(reservaFixa.getQuadra(), reserva, reserva.getCliente(), dataReserva);
 	}
-	
+
 	private List<String> obterNomesDias(List<Boolean> diasSelecionados) {
-	    List<String> nomesDias = new ArrayList<>();
+		List<String> nomesDias = new ArrayList<>();
 
-	    if (Boolean.TRUE.equals(diasSelecionados.get(0))) nomesDias.add("Segunda-feira");
-	    if (Boolean.TRUE.equals(diasSelecionados.get(1))) nomesDias.add("Terça-feira");
-	    if (Boolean.TRUE.equals(diasSelecionados.get(2))) nomesDias.add("Quarta-feira");
-	    if (Boolean.TRUE.equals(diasSelecionados.get(3))) nomesDias.add("Quinta-feira");
-	    if (Boolean.TRUE.equals(diasSelecionados.get(4))) nomesDias.add("Sexta-feira");
-	    if (Boolean.TRUE.equals(diasSelecionados.get(5))) nomesDias.add("Sábado");
-	    if (Boolean.TRUE.equals(diasSelecionados.get(6))) nomesDias.add("Domingo");
+		if (Boolean.TRUE.equals(diasSelecionados.get(0)))
+			nomesDias.add("Segunda-feira");
+		if (Boolean.TRUE.equals(diasSelecionados.get(1)))
+			nomesDias.add("Terça-feira");
+		if (Boolean.TRUE.equals(diasSelecionados.get(2)))
+			nomesDias.add("Quarta-feira");
+		if (Boolean.TRUE.equals(diasSelecionados.get(3)))
+			nomesDias.add("Quinta-feira");
+		if (Boolean.TRUE.equals(diasSelecionados.get(4)))
+			nomesDias.add("Sexta-feira");
+		if (Boolean.TRUE.equals(diasSelecionados.get(5)))
+			nomesDias.add("Sábado");
+		if (Boolean.TRUE.equals(diasSelecionados.get(6)))
+			nomesDias.add("Domingo");
 
-	    return nomesDias;
+		return nomesDias;
 	}
 }

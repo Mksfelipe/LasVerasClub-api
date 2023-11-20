@@ -39,12 +39,12 @@ public class Reserva {
 
 	@Getter
 	@Setter
-	private LocalDate data;
-	
+	private LocalDate data = LocalDate.now();
+
 	@Getter
 	@Setter
 	private OffsetTime horarioInicio;
-	
+
 	@Getter
 	@Setter
 	private OffsetTime horarioFim;
@@ -66,11 +66,11 @@ public class Reserva {
 	@Getter
 	@Setter
 	private BigDecimal amount = BigDecimal.ZERO;
-	
+
 	@Getter
 	@Setter
 	private int numberParticipants = 1;
-	
+
 	@Convert(converter = BooleanConverter.class)
 	private Boolean ativo = true;
 
@@ -78,31 +78,31 @@ public class Reserva {
 	@Setter
 	@Enumerated(EnumType.ORDINAL)
 	private TypeSport typeSport;
-	
+
 	@Getter
 	@Setter
 	private BigDecimal individualValue = BigDecimal.ZERO;
 
 	public void calcularPreco() {
-		
-	    long minutosReservados = Duration.between(horarioInicio, horarioFim).toMinutes();
-	    int horasReservadas = (int) Math.ceil(minutosReservados / 60.0);
 
-	    BigDecimal precoPorHora = quadra.getPricePerHour();
+		long minutosReservados = Duration.between(horarioInicio, horarioFim).toMinutes();
+		int horasReservadas = (int) Math.ceil(minutosReservados / 60.0);
 
-	    this.amount = precoPorHora.multiply(BigDecimal.valueOf(horasReservadas));
-	    calcularValorIndividual();
+		BigDecimal precoPorHora = quadra.getPricePerHour();
+
+		this.amount = precoPorHora.multiply(BigDecimal.valueOf(horasReservadas));
+		calcularValorIndividual();
 
 	}
-	
+
 	private void calcularValorIndividual() {
-	    if (numberParticipants > 0) {
-	        this.individualValue = this.amount.divide(BigDecimal.valueOf(numberParticipants), 2, RoundingMode.HALF_UP);
-	    }
+		if (numberParticipants > 0) {
+			this.individualValue = this.amount.divide(BigDecimal.valueOf(numberParticipants), 2, RoundingMode.HALF_UP);
+		}
 	}
 
-    @PrePersist
-    private void retrocederUmSegundoDataFinal() {
-    	this.horarioFim.minusMinutes(1);
-    }
+	@PrePersist
+	private void acrecenarUmSegundo() {
+		this.horarioFim = this.horarioFim.plusNanos(-1);
+	}
 }

@@ -85,16 +85,7 @@ public class ReservaFixa {
 	@Setter
 	@Enumerated(EnumType.ORDINAL)
 	private TypeSport typeSport;
-	
-	@Convert(converter = BooleanConverter.class)
-	private Boolean segunda = false;
-	
-	@Convert(converter = BooleanConverter.class)
-	private Boolean terca = false;
-	
-	@Convert(converter = BooleanConverter.class)
-	private Boolean quarta = false;
-	
+
 	@Convert(converter = BooleanConverter.class)public void calcularPreco() {
 		
 	    long minutosReservados = Duration.between(horarioInicio, horarioFim).toMinutes();
@@ -117,6 +108,16 @@ public class ReservaFixa {
     private void retrocederUmSegundoDataFinal() {
     	this.horarioFim.minusMinutes(1);
     }
+
+	@Convert(converter = BooleanConverter.class)
+	private Boolean segunda = false;
+	
+	@Convert(converter = BooleanConverter.class)
+	private Boolean terca = false;
+	
+	@Convert(converter = BooleanConverter.class)
+	private Boolean quarta = false;
+    
 	private Boolean quinta = false;
 	@Convert(converter = BooleanConverter.class)
 	private Boolean sexta = false;
@@ -131,7 +132,5 @@ public class ReservaFixa {
 	public List<Boolean> getDiasSemanaAsList() {
         return Arrays.asList(segunda, terca, quarta, quinta, sexta, sabado, domingo);
     }
-	
-	
 	
 }

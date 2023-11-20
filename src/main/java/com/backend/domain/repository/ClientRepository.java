@@ -15,4 +15,5 @@ public interface ClientRepository extends JpaRepository<Client, Long>{
 	@Query("SELECT c FROM Client c where c.cpf = ?1")
 	public Optional<Client> findByCpf(String cpf);
 	
+	
 }

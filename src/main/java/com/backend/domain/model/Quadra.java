@@ -44,5 +44,9 @@ public class Quadra {
 	@JsonIgnore
 	@OneToMany(mappedBy = "quadra", cascade = CascadeType.ALL)
 	private List<Reserva> reservas;
+	
+	public void desativar() {
+		this.ativo = false;
+	}
 
 }
