@@ -58,4 +58,5 @@ public class QuadraController {
 	public void desativar(@PathVariable Long quadraId) {
 		quadraService.desativar(quadraId);
 	}
+	
 }

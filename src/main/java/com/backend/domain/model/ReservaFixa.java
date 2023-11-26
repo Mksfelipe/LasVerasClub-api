@@ -42,7 +42,7 @@ public class ReservaFixa {
 
 	@Getter
 	@Setter
-	private LocalDate data;
+	private LocalDate data = LocalDate.now();
 	
 	@Getter
 	@Setter

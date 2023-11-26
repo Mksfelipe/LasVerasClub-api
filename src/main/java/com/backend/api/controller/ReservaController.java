@@ -38,7 +38,8 @@ public class ReservaController {
 
 	@GetMapping
 	public List<Reserva> reservaQuadra(@PathVariable Long quadraId) {
-		return reservaService.findAllByQuadraId(quadraId);
+		Quadra quadra = quadraService.findById(quadraId);
+		return reservaService.findAllByQuadraId(quadra.getId());
 	}
 
 	@PostMapping("/client/{clientId}")
