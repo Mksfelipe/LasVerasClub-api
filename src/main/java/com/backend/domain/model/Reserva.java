@@ -33,13 +33,13 @@ import lombok.Setter;
 public class Reserva {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_id_reserva")
 	@EqualsAndHashCode.Include
 	private Long id;
 
 	@Getter
 	@Setter
-	private LocalDate data = LocalDate.now();
+	private LocalDate data;
 
 	@Getter
 	@Setter
@@ -71,6 +71,8 @@ public class Reserva {
 	@Setter
 	private int numberParticipants = 1;
 
+	@Getter
+	@Setter
 	@Convert(converter = BooleanConverter.class)
 	private Boolean ativo = true;
 
@@ -78,6 +80,13 @@ public class Reserva {
 	@Setter
 	@Enumerated(EnumType.ORDINAL)
 	private TypeSport typeSport;
+
+	@JsonIgnore
+	@Getter
+	@Setter
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "reserva_fixa_id")
+	private ReservaFixa reservaFixa;
 
 	@Getter
 	@Setter

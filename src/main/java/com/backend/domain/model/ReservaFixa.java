@@ -36,7 +36,7 @@ import lombok.Setter;
 public class ReservaFixa {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_id_reserva_fixa")
 	@EqualsAndHashCode.Include
 	private Long id;
 
@@ -62,7 +62,8 @@ public class ReservaFixa {
 	@ManyToOne
 	@JoinColumn(name = "quadra_id")
 	private Quadra quadra;
-
+	
+	
 	@JsonIgnore
 	@Getter
 	@Setter

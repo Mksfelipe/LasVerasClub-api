@@ -1,10 +1,10 @@
 package com.backend.domain.service;
 
 import java.time.DayOfWeek;
-
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -18,6 +18,7 @@ import com.backend.domain.exception.ReservaExisteException;
 import com.backend.domain.model.Reserva;
 import com.backend.domain.model.ReservaFixa;
 import com.backend.domain.repository.ReservaFixaRepository;
+import com.backend.domain.repository.ReservaRepository;
 import com.backend.domain.repository.filter.ReservaFixaFilter;
 
 @Service
@@ -30,6 +31,9 @@ public class ReservaFixaService {
 	
 	@Autowired
 	private ReservaFixaRepository repositorioReservasFixas;
+	
+	@Autowired
+	private ReservaRepository reservaRepository;
 
 	@Autowired
 	private ReservaService reservaService;
@@ -48,7 +52,7 @@ public class ReservaFixaService {
 
 		gerarReservasParaClientesComReservaFixa(reservaFixa);
 		
-		return repositorioReservasFixas.save(reservaFixa);
+		return reservaFixa;
 	}
 
 	public List<ReservaFixa> findAll() {
@@ -57,43 +61,12 @@ public class ReservaFixaService {
 	
 	@Scheduled(cron = "0 0 0 1 * *")
 	private void gerarReservasParaClientesComReservaFixa() {
-		// Busca todas as reservas fixas cadastradas
-		List<ReservaFixa> reservasFixas = repositorioReservasFixas.findAll();
-
-		// Obtém o último dia do mês atual
-		LocalDate ultimoDiaDoMes = YearMonth.now().atEndOfMonth();
-
-		// Para cada reserva fixa, cria uma reserva correspondente para cada dia do mês
-		for (ReservaFixa reservaFixa : reservasFixas) {
-			for (LocalDate dataReserva = LocalDate.now(); dataReserva
-					.isBefore(ultimoDiaDoMes.plusDays(1)); dataReserva = dataReserva.plusDays(1)) {
-				if (isDiaSelecionado(reservaFixa, dataReserva.getDayOfWeek())) {
-					try {
-						criarReservaParaDia(reservaFixa, dataReserva);
-					} catch (ReservaExisteException ex) {
-						logger.warn("Reserva já gerada para {}", reservaFixa.getData());
-					}
-				}
-			}
-		}
+	    List<ReservaFixa> reservasFixas = repositorioReservasFixas.findAll();
+	    gerarReservasParaClientes(reservasFixas);
 	}
 
 	public void gerarReservasParaClientesComReservaFixa(ReservaFixa reservaFixa) {
-
-		// Obtém o último dia do mês atual
-		LocalDate ultimoDiaDoMes = YearMonth.now().atEndOfMonth();
-
-		// Para cada reserva fixa, cria uma reserva correspondente para cada dia do mês
-		for (LocalDate dataReserva = LocalDate.now(); dataReserva
-				.isBefore(ultimoDiaDoMes.plusDays(1)); dataReserva = dataReserva.plusDays(1)) {
-			if (isDiaSelecionado(reservaFixa, dataReserva.getDayOfWeek())) {
-				try {
-					criarReservaParaDia(reservaFixa, dataReserva);
-				} catch (ReservaExisteException ex) {
-					logger.warn("Reserva já gerada para {}", reservaFixa.getData());
-				}
-			}
-		}
+	    gerarReservasParaClientes(Collections.singletonList(reservaFixa));
 	}
 
 	private boolean isDiaSelecionado(ReservaFixa reservaFixa, DayOfWeek diaDaSemana) {
@@ -120,7 +93,10 @@ public class ReservaFixaService {
 	private void criarReservaParaDia(ReservaFixa reservaFixa, LocalDate dataReserva) {
 		Reserva reserva = modelMapper.map(reservaFixa, Reserva.class);
 		reserva.setData(dataReserva);
-
+		repositorioReservasFixas.save(reservaFixa);
+		
+		reserva.setReservaFixa(reservaFixa);
+		
 		reservaService.save(reservaFixa.getQuadra(), reserva, reserva.getUser(), dataReserva);
 	}
 
@@ -144,4 +120,42 @@ public class ReservaFixaService {
 
 		return nomesDias;
 	}
+	
+	private void gerarReservasParaClientes(List<ReservaFixa> reservasFixas) {
+	    LocalDate ultimoDiaDoMes = YearMonth.now().atEndOfMonth();
+
+	    for (ReservaFixa reservaFixa : reservasFixas) {
+	        for (LocalDate dataReserva = LocalDate.now(); dataReserva.isBefore(ultimoDiaDoMes.plusDays(1)); dataReserva = dataReserva.plusDays(1)) {
+	            if (isDiaSelecionado(reservaFixa, dataReserva.getDayOfWeek())) {
+	                try {
+	                    criarReservaParaDia(reservaFixa, dataReserva);
+	                    
+	                } catch (ReservaExisteException ex) {
+	                    logger.warn("Reserva já gerada para {}", reservaFixa.getData());
+	                }
+	            }
+	        }
+	    }
+	}
+	
+	public void cancelarReservaFixaAssociadas(Long idReservaFixa) {
+        ReservaFixa reservaFixa = repositorioReservasFixas.findById(idReservaFixa)
+                .orElseThrow(() -> new ReservaExisteException("Reserva Fixa não encontrada com o ID: " + idReservaFixa));
+
+        cancelarReservasAssociadas(reservaFixa);
+        reservaFixa.setAtivo(false);
+        repositorioReservasFixas.save(reservaFixa);
+    }
+
+    private void cancelarReservasAssociadas(ReservaFixa reservaFixa) {
+        List<Reserva> reservasAssociadas = reservasAssociadas(reservaFixa);
+        for (Reserva reserva : reservasAssociadas) {
+        	reserva.setAtivo(false);
+        	reservaRepository.save(reserva);
+        }
+    }
+
+    private List<Reserva> reservasAssociadas(ReservaFixa reservaFixa) {
+    	return reservaRepository.findAllByReservaFixa(reservaFixa.getId());
+    }
 }

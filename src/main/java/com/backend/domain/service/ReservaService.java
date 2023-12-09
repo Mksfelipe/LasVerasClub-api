@@ -27,6 +27,10 @@ public class ReservaService {
 	@Transactional
 	public Reserva save(Quadra quadra, Reserva reserva, User user, LocalDate dataDesejada) {
 
+		if (!dataDesejada.isEqual(LocalDate.now()) && !dataDesejada.isAfter(LocalDate.now())) {
+			throw new ReservaHorarioException("Data da reserva nao pode ser retroativa a data atual");
+		}
+		
 		if (reservaRepository.isHorarioDisponivel(quadra, dataDesejada, reserva.getHorarioInicio(),
 				reserva.getHorarioFim())) {
 			throw new ReservaExisteException(String.format("Horario ja cadastrado para a quadra %s, Horario: %s",
