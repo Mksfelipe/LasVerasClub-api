@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ClientInputModel {
+public class UserInputModel {
 
 	private String firstName;
 	private String lastName;

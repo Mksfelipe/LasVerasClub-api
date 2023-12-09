@@ -4,18 +4,18 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.backend.api.model.input.ClientInputModel;
-import com.backend.domain.model.Client;
+import com.backend.api.model.input.UserInputModel;
+import com.backend.domain.model.User;
 
 
 @Component
-public class ClientInputDisassembler {
+public class UserInputDisassembler {
 
 	@Autowired
 	private ModelMapper mapper;
 	
-	public Client toDomainObject(ClientInputModel clientInputModel) {
-		return mapper.map(clientInputModel, Client.class);
+	public User toDomainObject(UserInputModel userInputModel) {
+		return mapper.map(userInputModel, User.class);
 	}
 	
 }

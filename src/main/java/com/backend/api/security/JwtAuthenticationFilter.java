@@ -15,7 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.backend.domain.model.CustomUserDetail;
+import com.backend.api.model.CustomUserDetail;
 import com.backend.domain.service.CustomUserDetailsService;
 
 import io.jsonwebtoken.ExpiredJwtException;

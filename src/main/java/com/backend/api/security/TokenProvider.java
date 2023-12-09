@@ -15,7 +15,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import com.backend.domain.model.CustomUserDetail;
+import com.backend.api.model.CustomUserDetail;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -65,7 +65,7 @@ public class TokenProvider implements Serializable {
 
 		CustomUserDetail myClinetDetails = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication()
 				.getPrincipal();
-
+		
 		return Jwts.builder().setSubject(myClinetDetails.getUser().getEmail()).claim(AUTHORITIES_KEY, authorities)
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + TOKEN_VALIDITY * 1000))

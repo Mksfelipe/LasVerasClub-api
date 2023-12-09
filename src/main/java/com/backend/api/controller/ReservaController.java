@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.api.assembler.ReservaInputDisassembler;
 import com.backend.api.model.input.ReservaInput;
-import com.backend.domain.model.Client;
 import com.backend.domain.model.Quadra;
 import com.backend.domain.model.Reserva;
+import com.backend.domain.model.User;
 import com.backend.domain.service.ClientService;
 import com.backend.domain.service.QuadraService;
 import com.backend.domain.service.ReservaService;
@@ -25,14 +25,14 @@ public class ReservaController {
 
 	private final ReservaService reservaService;
 	private final QuadraService quadraService;
-	private final ClientService clientService;
+	private final ClientService userService;
 	private final ReservaInputDisassembler disassembler;
 	
 	public ReservaController(ReservaService reservaService, QuadraService quadraService,
-			ClientService clientService, ReservaInputDisassembler disassembler) {
+			ClientService userService, ReservaInputDisassembler disassembler) {
 		this.quadraService = quadraService;
 		this.reservaService = reservaService;
-		this.clientService = clientService;
+		this.userService = userService;
 		this.disassembler = disassembler;
 	}
 
@@ -42,14 +42,13 @@ public class ReservaController {
 		return reservaService.findAllByQuadraId(quadra.getId());
 	}
 
-	@PostMapping("/client/{clientId}")
-	public Reserva save(@PathVariable Long quadraId, @RequestBody ReservaInput reservaInput, @PathVariable Long clientId) {
+	@PostMapping("/user/{userId}")
+	public Reserva save(@PathVariable Long quadraId, @RequestBody ReservaInput reservaInput, @PathVariable Long userId) {
 		Reserva reserva = disassembler.toDomainObject(reservaInput);
-		Client client = clientService.findById(clientId);
+		User user = userService.findById(userId);
 		Quadra quadra = quadraService.findById(quadraId);
 		
-		
-		reservaService.save(quadra, reserva, client, LocalDate.now());
+		reservaService.save(quadra, reserva, user, reserva.getData());
 
 		return reserva;
 	}

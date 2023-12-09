@@ -51,8 +51,12 @@ public class ReservaFixaService {
 		return repositorioReservasFixas.save(reservaFixa);
 	}
 
+	public List<ReservaFixa> findAll() {
+		return repositorioReservasFixas.findAll();
+	}
+	
 	@Scheduled(cron = "0 0 0 1 * *")
-	public void gerarReservasParaClientesComReservaFixa() {
+	private void gerarReservasParaClientesComReservaFixa() {
 		// Busca todas as reservas fixas cadastradas
 		List<ReservaFixa> reservasFixas = repositorioReservasFixas.findAll();
 
@@ -117,7 +121,7 @@ public class ReservaFixaService {
 		Reserva reserva = modelMapper.map(reservaFixa, Reserva.class);
 		reserva.setData(dataReserva);
 
-		reservaService.save(reservaFixa.getQuadra(), reserva, reserva.getCliente(), dataReserva);
+		reservaService.save(reservaFixa.getQuadra(), reserva, reserva.getUser(), dataReserva);
 	}
 
 	private List<String> obterNomesDias(List<Boolean> diasSelecionados) {

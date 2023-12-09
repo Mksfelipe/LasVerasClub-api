@@ -15,6 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -23,6 +24,7 @@ import javax.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.br.CPF;
 import org.springframework.security.core.GrantedAuthority;
 
+import com.backend.api.model.CustomUserDetail;
 import com.backend.domain.model.converter.BooleanConverter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -32,7 +34,8 @@ import lombok.Setter;
 
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
-public class Client extends CustomUserDetail {
+@Table(name="users")
+public class User extends CustomUserDetail {
 
 	private static final long serialVersionUID = 1L;
 
@@ -40,10 +43,10 @@ public class Client extends CustomUserDetail {
 	@Setter
 	@Id
 	@EqualsAndHashCode.Include
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_id_clients")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_id_users")
 	private Long id;
 
-	@Getter
+	@Getter	
 	private String firstName;
 
 	@Getter
@@ -75,10 +78,10 @@ public class Client extends CustomUserDetail {
 	@Getter
 	@Setter
 	@ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
-	@JoinTable(name = "client_roles", joinColumns = @JoinColumn(name = "client_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
 	
-	@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Reserva> reservas;
 
 	public void disable() {

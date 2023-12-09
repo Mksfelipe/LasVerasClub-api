@@ -60,8 +60,8 @@ public class Reserva {
 	@Getter
 	@Setter
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "client_id")
-	private Client cliente;
+	@JoinColumn(name = "user_id")
+	private User user;
 
 	@Getter
 	@Setter

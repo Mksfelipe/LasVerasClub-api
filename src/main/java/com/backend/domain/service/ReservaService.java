@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 
 import com.backend.domain.exception.ReservaExisteException;
 import com.backend.domain.exception.ReservaHorarioException;
-import com.backend.domain.model.Client;
 import com.backend.domain.model.Quadra;
 import com.backend.domain.model.Reserva;
+import com.backend.domain.model.User;
 import com.backend.domain.repository.ReservaRepository;
 
 @Service
@@ -25,7 +25,7 @@ public class ReservaService {
 	}
 
 	@Transactional
-	public Reserva save(Quadra quadra, Reserva reserva, Client cliente, LocalDate dataDesejada) {
+	public Reserva save(Quadra quadra, Reserva reserva, User user, LocalDate dataDesejada) {
 
 		if (reservaRepository.isHorarioDisponivel(quadra, dataDesejada, reserva.getHorarioInicio(),
 				reserva.getHorarioFim())) {
@@ -42,7 +42,7 @@ public class ReservaService {
 		}
 
 		reserva.setQuadra(quadra);
-		reserva.setCliente(cliente);
+		reserva.setUser(user);
 		reserva.calcularPreco();
 
 		return reservaRepository.save(reserva);

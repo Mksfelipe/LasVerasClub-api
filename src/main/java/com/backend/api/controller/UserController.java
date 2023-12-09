@@ -12,43 +12,43 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.api.assembler.ClientModelAssembler;
-import com.backend.api.disassembler.ClientInputDisassembler;
-import com.backend.api.model.ClientModel;
-import com.backend.api.model.input.ClientInputModel;
-import com.backend.domain.model.Client;
+import com.backend.api.disassembler.UserInputDisassembler;
+import com.backend.api.model.UserModel;
+import com.backend.api.model.input.UserInputModel;
+import com.backend.domain.model.User;
 import com.backend.domain.service.ClientService;
 
 @RestController
 @RequestMapping("/admin")
-public class ClientController {
+public class UserController {
 
-	private final ClientService clientService;
-	private final ClientInputDisassembler clientInputDisassembler;
+	private final ClientService userService;
+	private final UserInputDisassembler userInputDisassembler;
 	private final ClientModelAssembler clientModelAssembler;
 	private BCryptPasswordEncoder encode;
 	
-	public ClientController(ClientService clientService, ClientInputDisassembler clientInputDisassembler, BCryptPasswordEncoder encode, ClientModelAssembler clientModelAssembler) {
-		this.clientService = clientService;
-		this.clientInputDisassembler = clientInputDisassembler;
+	public UserController(ClientService userService, UserInputDisassembler userInputDisassembler, BCryptPasswordEncoder encode, ClientModelAssembler clientModelAssembler) {
+		this.userService = userService;
+		this.userInputDisassembler = userInputDisassembler;
 		this.encode = encode;
 		this.clientModelAssembler = clientModelAssembler;
 	}
 	
 	@PostMapping("/client")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ClientModel save(@RequestBody ClientInputModel clientInputModel) {
-		clientInputModel.setPassword(encode.encode(clientInputModel.getPassword()));
+	public UserModel save(@RequestBody UserInputModel userInputModel) {
+		userInputModel.setPassword(encode.encode(userInputModel.getPassword()));
 		
-		Client client = clientInputDisassembler.toDomainObject(clientInputModel);
+		User user = userInputDisassembler.toDomainObject(userInputModel);
 		
-		return clientModelAssembler.toModel(clientService.save(client));
+		return clientModelAssembler.toModel(userService.save(user));
 	}
 	
 	@PutMapping("/client/{clientId}/disable")
 	@ResponseStatus(value = HttpStatus.NO_CONTENT)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void clientDisable(@PathVariable Long clientId) {
-		clientService.disableClient(clientId);
+		userService.disableClient(clientId);
 	}
 	
 }

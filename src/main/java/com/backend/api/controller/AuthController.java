@@ -22,15 +22,16 @@ public class AuthController {
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
-
+	
 	@Autowired
 	private TokenProvider jwtTokenUtil;
 
 	@PostMapping(value = "/signin")
 	public ResponseEntity<AuthTokenModel> generateToken(@RequestBody LoginUserModel loginUser) throws AuthenticationException {
-
+		
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(loginUser.getEmail(), loginUser.getPassword()));
+		
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		final String token = jwtTokenUtil.generateToken(authentication);
 

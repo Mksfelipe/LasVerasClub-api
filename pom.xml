@@ -96,6 +96,11 @@
 			<version>1.6.4</version> <!-- Versão mais recente disponível -->
 		</dependency>
 
+		<dependency>
+			<groupId>backend</groupId>
+			<artifactId>spring-jwt</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>
