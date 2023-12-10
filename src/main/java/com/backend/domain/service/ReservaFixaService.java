@@ -3,7 +3,6 @@ package com.backend.domain.service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,7 +44,7 @@ public class ReservaFixaService {
 		if (repositorioReservasFixas.existsReservaFixaNoMesmoDiaEHorarioEQuadra(filter)) {
 			throw new ReservaExisteException(
 					String.format("Já Existe uma Reserva fixa cadastrada nesse Horario na quadra: %s, Nos dias: %s",
-							reservaFixa.getQuadra().getNome(), obterNomesDias(filter.getDiasSemana())));
+							reservaFixa.getQuadra().getNome(), filter.getDiasSemana()));
 		}
 
 		reservaFixa.calcularPreco();
@@ -100,27 +99,6 @@ public class ReservaFixaService {
 		reservaService.save(reservaFixa.getQuadra(), reserva, reserva.getUser(), dataReserva);
 	}
 
-	private List<String> obterNomesDias(List<Boolean> diasSelecionados) {
-		List<String> nomesDias = new ArrayList<>();
-
-		if (Boolean.TRUE.equals(diasSelecionados.get(0)))
-			nomesDias.add("Segunda-feira");
-		if (Boolean.TRUE.equals(diasSelecionados.get(1)))
-			nomesDias.add("Terça-feira");
-		if (Boolean.TRUE.equals(diasSelecionados.get(2)))
-			nomesDias.add("Quarta-feira");
-		if (Boolean.TRUE.equals(diasSelecionados.get(3)))
-			nomesDias.add("Quinta-feira");
-		if (Boolean.TRUE.equals(diasSelecionados.get(4)))
-			nomesDias.add("Sexta-feira");
-		if (Boolean.TRUE.equals(diasSelecionados.get(5)))
-			nomesDias.add("Sábado");
-		if (Boolean.TRUE.equals(diasSelecionados.get(6)))
-			nomesDias.add("Domingo");
-
-		return nomesDias;
-	}
-	
 	private void gerarReservasParaClientes(List<ReservaFixa> reservasFixas) {
 	    LocalDate ultimoDiaDoMes = YearMonth.now().atEndOfMonth();
 

@@ -5,8 +5,7 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.OffsetTime;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -119,7 +118,9 @@ public class ReservaFixa {
 	@Convert(converter = BooleanConverter.class)
 	private Boolean quarta = false;
     
+	@Convert(converter = BooleanConverter.class)
 	private Boolean quinta = false;
+	
 	@Convert(converter = BooleanConverter.class)
 	private Boolean sexta = false;
 	
@@ -130,8 +131,8 @@ public class ReservaFixa {
 	private Boolean domingo = false;
 
 	@JsonIgnore
-	public List<Boolean> getDiasSemanaAsList() {
-        return Arrays.asList(segunda, terca, quarta, quinta, sexta, sabado, domingo);
+	public Map<String, Boolean> getDiasSemanaAsList() {
+        return Map.of("segunda", segunda, "terca", terca, "quarta", quarta, "quinta", quinta, "sexta", sexta, "sabado", sabado, "domingo", domingo);
     }
 	
 }

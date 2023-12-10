@@ -1,7 +1,7 @@
 package com.backend.domain.repository.filter;
 
 import java.time.OffsetTime;
-import java.util.List;
+import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +12,6 @@ public class ReservaFixaFilter {
 	
 	private OffsetTime horarioInicio;
 	private OffsetTime horarioFim;
-	private List<Boolean> diasSemana;
+	private Map<String, Boolean> diasSemana;
 	private Long quadraId;
 }
